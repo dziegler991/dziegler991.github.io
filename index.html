@@ -82,13 +82,17 @@
       const nameInput = document.getElementById('name-input');
       const nameHint = document.getElementById('name-hint');
       const card = document.getElementById('valentine-card');
+      let valentineLogicStarted = false;
 
       function checkName() {
         const value = (nameInput.value || '').trim().toLowerCase();
         if (value === 'swootie') {
           nameGate.classList.add('hidden');
           card.classList.remove('hidden');
-          startValentineLogic();
+          if (!valentineLogicStarted) {
+            valentineLogicStarted = true;
+            startValentineLogic();
+          }
         }
       }
 
