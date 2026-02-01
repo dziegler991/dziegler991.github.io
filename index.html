@@ -263,7 +263,7 @@
           noBtnConverted = false;
           hasCelebrated = false;
         }
-        musicReset.addEventListener('click', doReset);
+        if (musicReset) musicReset.addEventListener('click', doReset);
 
         const valentineHeading = document.getElementById('valentine-heading');
         let hasCelebrated = false;
