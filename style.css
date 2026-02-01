@@ -127,80 +127,80 @@ body {
   object-fit: contain;
   opacity: 0.75;
 }
-/* Horizontal: start fully off-screen (big dogs can be 448px; left = left edge so use -60% / 160%) */
+/* Horizontal: start 130% off-screen */
 .floating-dogs-bg .floating-dog.float-lr {
   top: 50%;
-  left: -60%;
+  left: -30%;
   transform: translateY(-50%);
   animation: float-h 40s linear infinite;
 }
 .floating-dogs-bg .floating-dog.float-rl {
   top: 50%;
-  left: 160%;
+  left: 130%;
   transform: translateY(-50%);
   animation: float-h 40s linear infinite reverse;
 }
 @keyframes float-h {
-  0% { left: -60%; }
-  100% { left: 160%; }
+  0% { left: var(--float-start-x, -130%); }
+  100% { left: var(--float-end-x, 230%); }
 }
-/* Vertical: start fully off-screen */
+/* Vertical: start 130% off-screen */
 .floating-dogs-bg .floating-dog.float-tb {
   left: 50%;
-  top: -60%;
+  top: -130%;
   transform: translateX(-50%);
   animation: float-v 40s linear infinite;
 }
 .floating-dogs-bg .floating-dog.float-bt {
   left: 50%;
-  top: 160%;
+  top: 230%;
   transform: translateX(-50%);
   animation: float-v 40s linear infinite reverse;
 }
 @keyframes float-v {
-  0% { top: -60%; }
-  100% { top: 160%; }
+  0% { top: var(--float-start-y, -130%); }
+  100% { top: var(--float-end-y, 230%); }
 }
-/* Diagonal directions: more spread, less overlap; start off-screen */
+/* Diagonal directions: 130% off-screen */
 .floating-dogs-bg .floating-dog.float-tl-br {
-  left: -60%;
-  top: -60%;
+  left: -130%;
+  top: -130%;
   transform: none;
   animation: float-tl-br 40s linear infinite;
 }
 .floating-dogs-bg .floating-dog.float-tr-bl {
-  left: 160%;
-  top: -60%;
+  left: 230%;
+  top: -130%;
   transform: none;
   animation: float-tr-bl 40s linear infinite;
 }
 .floating-dogs-bg .floating-dog.float-bl-tr {
-  left: -60%;
-  top: 160%;
+  left: -130%;
+  top: 230%;
   transform: none;
   animation: float-bl-tr 40s linear infinite;
 }
 .floating-dogs-bg .floating-dog.float-br-tl {
-  left: 160%;
-  top: 160%;
+  left: 230%;
+  top: 230%;
   transform: none;
   animation: float-br-tl 40s linear infinite;
 }
 @keyframes float-tl-br {
-  0% { left: -60%; top: -60%; }
-  100% { left: 160%; top: 160%; }
+  0% { left: var(--float-start-x, -130%); top: var(--float-start-y, -130%); }
+  100% { left: var(--float-end-x, 230%); top: var(--float-end-y, 230%); }
 }
 @keyframes float-tr-bl {
-  0% { left: 160%; top: -60%; }
-  100% { left: -60%; top: 160%; }
+  0% { left: var(--float-end-x, 230%); top: var(--float-start-y, -130%); }
+  100% { left: var(--float-start-x, -130%); top: var(--float-end-y, 230%); }
 }
 @keyframes float-bl-tr {
-  0% { left: -60%; top: 160%; }
-  100% { left: 160%; top: -60%; }
+  0% { left: var(--float-start-x, -130%); top: var(--float-end-y, 230%); }
+  100% { left: var(--float-end-x, 230%); top: var(--float-start-y, -130%); }
 }
 @keyframes float-br-tl {
-  0% { left: 160%; top: 160%; }
-  100% { left: -60%; top: -60%; }
+  0% { left: var(--float-end-x, 230%); top: var(--float-end-y, 230%); }
+  100% { left: var(--float-start-x, -130%); top: var(--float-start-y, -130%); }
 }
 .floating-dogs-bg.floating-dogs-hidden .floating-dog {
   opacity: 0;

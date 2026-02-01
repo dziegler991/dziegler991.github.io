@@ -190,13 +190,23 @@
         const SPAWN_INTERVAL_MIN = 10000;
         const SPAWN_INTERVAL_MAX = 18000;
 
-        function styleFloatingDog(el) {
+        function styleFloatingDog(el, startJustOffScreen) {
           el.style.width = (112 + Math.random() * 336) + 'px';
-          el.style.animationDelay = (1 + Math.random() * 2) + 's';
+          el.style.animationDelay = '0s';
           el.style.animationDuration = (32 + Math.random() * 24) + 's';
           var dir = directions.find(function (d) { return el.classList.contains(d); });
           var isHorizontal = dir === 'float-lr' || dir === 'float-rl';
           var isVertical = dir === 'float-tb' || dir === 'float-bt';
+          if (startJustOffScreen) {
+            if (dir === 'float-lr') { el.style.setProperty('--float-start-x', '-5%'); el.style.setProperty('--float-end-x', '230%'); }
+            else if (dir === 'float-rl') { el.style.setProperty('--float-start-x', '230%'); el.style.setProperty('--float-end-x', '-5%'); }
+            else if (dir === 'float-tb') { el.style.setProperty('--float-start-y', '-5%'); el.style.setProperty('--float-end-y', '230%'); }
+            else if (dir === 'float-bt') { el.style.setProperty('--float-start-y', '230%'); el.style.setProperty('--float-end-y', '-5%'); }
+            else if (dir === 'float-tl-br') { el.style.setProperty('--float-start-x', '-5%'); el.style.setProperty('--float-start-y', '-5%'); el.style.setProperty('--float-end-x', '230%'); el.style.setProperty('--float-end-y', '230%'); }
+            else if (dir === 'float-tr-bl') { el.style.setProperty('--float-start-x', '230%'); el.style.setProperty('--float-start-y', '-5%'); el.style.setProperty('--float-end-x', '-5%'); el.style.setProperty('--float-end-y', '230%'); }
+            else if (dir === 'float-bl-tr') { el.style.setProperty('--float-start-x', '-5%'); el.style.setProperty('--float-start-y', '230%'); el.style.setProperty('--float-end-x', '230%'); el.style.setProperty('--float-end-y', '-5%'); }
+            else if (dir === 'float-br-tl') { el.style.setProperty('--float-start-x', '230%'); el.style.setProperty('--float-start-y', '230%'); el.style.setProperty('--float-end-x', '-5%'); el.style.setProperty('--float-end-y', '-5%'); }
+          }
           if (isHorizontal) {
             el.style.top = (10 + Math.random() * 80) + '%';
             el.style.left = '';
@@ -206,7 +216,7 @@
           }
         }
 
-        function spawnDog() {
+        function spawnDog(startJustOffScreen) {
           if (floatingDogsEl.classList.contains('floating-dogs-hidden')) return;
           var dogs = floatingDogsEl.querySelectorAll('.floating-dog');
           if (dogs.length >= MAX_DOGS) {
@@ -217,14 +227,15 @@
           img.alt = '';
           img.className = 'floating-dog ' + directions[Math.floor(Math.random() * directions.length)];
           floatingDogsEl.appendChild(img);
-          styleFloatingDog(img);
+          styleFloatingDog(img, startJustOffScreen);
         }
 
         floatingDogsEl.classList.remove('hidden');
-        for (var i = 0; i < 4; i++) spawnDog();
+        for (var i = 0; i < 4; i++) spawnDog(true);
+        for (var i = 0; i < 4; i++) spawnDog(false);
         function scheduleNextDog() {
           setTimeout(function () {
-            spawnDog();
+            spawnDog(false);
             scheduleNextDog();
           }, SPAWN_INTERVAL_MIN + Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN));
         }
