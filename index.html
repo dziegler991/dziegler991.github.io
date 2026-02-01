@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Valentine's Day</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ec4899'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E" type="image/svg+xml">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="favicon-32x32.png" sizes="32x32" type="image/png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="style.css">
@@ -61,8 +63,9 @@
     </div>
   </main>
 
-  <!-- Music controls: bottom right of background, shown after Yes -->
+  <!-- Music controls: bottom right of background, shown only after Yes -->
   <div id="music-controls" class="music-controls fixed bottom-4 right-4 z-[100] hidden flex items-center gap-3 bg-white/90 backdrop-blur rounded-xl shadow-lg border border-rose-200/50 px-3 py-2">
+    <button type="button" id="music-reset" class="music-reset w-9 h-9 flex items-center justify-center rounded-full bg-rose-400 text-white hover:bg-rose-500 transition text-sm font-medium" aria-label="Reset to card">&#8634;</button>
     <button type="button" id="music-play-pause" class="music-play-pause w-9 h-9 flex items-center justify-center rounded-full bg-rose-500 text-white hover:bg-rose-600 transition" aria-label="Play or pause">
       <span id="music-play-pause-icon">▶</span>
     </button>
