@@ -192,7 +192,7 @@
 
         function styleFloatingDog(el) {
           el.style.width = (112 + Math.random() * 336) + 'px';
-          el.style.animationDelay = (3 + Math.random() * 2) + 's';
+          el.style.animationDelay = (1 + Math.random() * 2) + 's';
           el.style.animationDuration = (32 + Math.random() * 24) + 's';
           var dir = directions.find(function (d) { return el.classList.contains(d); });
           var isHorizontal = dir === 'float-lr' || dir === 'float-rl';
