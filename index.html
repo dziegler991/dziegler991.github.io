@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valentine's Day</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="valentine-bg min-h-screen flex items-center justify-center p-4 relative">
+  <!-- Floating dogs on page background (behind card), shown when card is visible -->
+  <div id="floating-dogs" class="floating-dogs-bg pointer-events-none fixed inset-0 z-0 hidden" aria-hidden="true"></div>
+
+  <!-- Gate: name prompt (shown first) -->
+  <section id="name-gate" class="relative z-10 text-center flex flex-col items-center">
+    <img src="image.png" alt="" class="w-32 sm:w-40 h-auto mb-6 mx-auto object-contain" />
+    <p class="text-2xl sm:text-4xl text-rose-800 font-medium mb-4 flex flex-wrap justify-center items-baseline gap-2">
+      <span>Your name is</span>
+      <span class="name-input-wrap">
+        <span class="name-input-measure text-2xl sm:text-4xl font-medium" aria-hidden="true">swootie</span>
+        <span class="name-input-underline" aria-hidden="true"></span>
+        <input
+          type="text"
+          id="name-input"
+          autocomplete="off"
+          maxlength="20"
+          class="name-input text-2xl sm:text-4xl text-rose-800 font-medium bg-transparent border-none rounded-none px-0 pt-0 pb-1 focus:outline-none focus:ring-0"
+        />
+      </span>
+      <span>.</span>
+    </p>
+    <p id="name-hint" class="mt-3 text-sm text-rose-500/80 hidden">Type your name and press Enter</p>
+  </section>
+
+  <!-- Main content (hidden until name is "swootie") -->
+  <main id="valentine-card" class="valentine-card max-w-2xl w-full min-h-[480px] rounded-2xl shadow-xl overflow-visible relative z-10 hidden">
+    <!-- White div at top of box (matches GIF background), Snoopy GIF rotated 17° -->
+    <div class="snoopy-top rounded-t-2xl overflow-hidden relative" style="background-color: #ffffff;">
+      <img src="snoopy.gif" alt="" class="snoopy-gif-rotated" />
+    </div>
+    <!-- Main content (header) -->
+    <div class="pt-6 sm:pt-8 pb-2 text-center relative z-10">
+      <h1 id="valentine-heading" class="text-xl sm:text-2xl font-bold text-rose-700 mb-3">Swootie, will you be my valentine?</h1>
+    </div>
+
+    <div class="px-8 pb-3 pt-2 text-center relative z-10">
+     <!--   <h2 class="text-lg sm:text-xl text-rose-600 mt-2">Say yes and make my day 💕</h2> -->
+
+      <!-- Button area: both in flow on load (side-by-side with gap), then No flees via transform -->
+      <div id="button-zone" class="flex gap-4 justify-center items-center mt-6 min-h-[120px] relative">
+        <button type="button" id="yes-btn" class="valentine-btn-yes min-w-[140px] sm:min-w-[160px] px-8 py-3 rounded-full font-semibold text-white shadow-md hover:shadow-lg transition flex-shrink-0">
+          Yes
+        </button>
+        <div id="no-btn-tooltip" class="no-btn-tooltip no-btn-tooltip-hidden" role="tooltip" aria-hidden="true">i think you mean....</div>
+        <button type="button" id="no-btn" class="valentine-btn-no min-w-[140px] sm:min-w-[160px] px-8 py-3 rounded-full font-semibold border-2 border-rose-300 text-rose-600 hover:bg-rose-50 transition flex-shrink-0">
+          No
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Music controls: bottom right of background, shown after Yes -->
+  <div id="music-controls" class="music-controls fixed bottom-4 right-4 z-[100] hidden flex items-center gap-3 bg-white/90 backdrop-blur rounded-xl shadow-lg border border-rose-200/50 px-3 py-2">
+    <button type="button" id="music-play-pause" class="music-play-pause w-9 h-9 flex items-center justify-center rounded-full bg-rose-500 text-white hover:bg-rose-600 transition" aria-label="Play or pause">
+      <span id="music-play-pause-icon">▶</span>
+    </button>
+    <div class="flex items-center gap-2">
+      <label for="music-volume" class="sr-only">Volume</label>
+      <input type="range" id="music-volume" min="0" max="1" step="0.05" value="1" class="music-volume w-20 h-2 rounded-full accent-rose-500" />
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // --- Name gate: show main content only if name is "swootie" (any case) ---
+      const nameGate = document.getElementById('name-gate');
+      const nameInput = document.getElementById('name-input');
+      const nameHint = document.getElementById('name-hint');
+      const card = document.getElementById('valentine-card');
+
+      function checkName() {
+        const value = (nameInput.value || '').trim().toLowerCase();
+        if (value === 'swootie') {
+          nameGate.classList.add('hidden');
+          card.classList.remove('hidden');
+          startValentineLogic();
+        }
+      }
+
+      nameInput.addEventListener('input', function () {
+        nameHint.classList.remove('hidden');
+        checkName();
+      });
+      nameInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') checkName();
+      });
+      nameInput.addEventListener('blur', checkName);
+
+      // --- Valentine card: fleeing No button (via transform so it stays in flow on load), heart cursor, etc. ---
+      function startValentineLogic() {
+        const zone = document.getElementById('button-zone');
+        const noBtn = document.getElementById('no-btn');
+        const noTooltip = document.getElementById('no-btn-tooltip');
+
+        const RUN_DISTANCE = 160;   // flee when cursor is within this
+        const MOVE_SPEED = 32;     // px per frame the button runs away
+        const BOUNDS_PADDING = 12;
+
+        let mouseX = 0, mouseY = 0;
+        let offsetX = 0, offsetY = 0; // transform offset from No button's natural flex position
+        let zoneRect = { left: 0, top: 0, width: 0, height: 0 };
+        let noBtnConverted = false; // true after user clicks No (button says "Yes", tooltip shown)
+
+        function updateZoneRect() {
+          zoneRect = zone.getBoundingClientRect();
+        }
+
+        function setNoButtonTransform(dx, dy) {
+          offsetX = dx;
+          offsetY = dy;
+          noBtn.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+        }
+
+        function clamp(val, min, max) {
+          return Math.max(min, Math.min(max, val));
+        }
+
+        function updateNoButton() {
+          if (noBtnConverted) return;
+          updateZoneRect();
+          const cardRect = card.getBoundingClientRect();
+          if (zoneRect.width < 50 || zoneRect.height < 50) {
+            requestAnimationFrame(updateNoButton);
+            return;
+          }
+
+          // Button's visual position includes transform; getBoundingClientRect() reflects that
+          const btnRect = noBtn.getBoundingClientRect();
+          const btnCenterX = btnRect.left + btnRect.width / 2;
+          const btnCenterY = btnRect.top + btnRect.height / 2;
+
+          const dx = mouseX - btnCenterX;
+          const dy = mouseY - btnCenterY;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < RUN_DISTANCE && dist > 2) {
+            // Move button away from cursor (direction away = opposite of cursor-to-button)
+            const nx = -dx / dist;
+            const ny = -dy / dist;
+            let newOffsetX = offsetX + nx * MOVE_SPEED;
+            let newOffsetY = offsetY + ny * MOVE_SPEED;
+
+            // Clamp so the button stays within the entire card
+            const minOffsetX = (cardRect.left + BOUNDS_PADDING) - (zoneRect.left + noBtn.offsetLeft);
+            const maxOffsetX = (cardRect.right - BOUNDS_PADDING - noBtn.offsetWidth) - (zoneRect.left + noBtn.offsetLeft);
+            const minOffsetY = (cardRect.top + BOUNDS_PADDING) - (zoneRect.top + noBtn.offsetTop);
+            const maxOffsetY = (cardRect.bottom - BOUNDS_PADDING - noBtn.offsetHeight) - (zoneRect.top + noBtn.offsetTop);
+            newOffsetX = clamp(newOffsetX, minOffsetX, Math.max(minOffsetX, maxOffsetX));
+            newOffsetY = clamp(newOffsetY, minOffsetY, Math.max(minOffsetY, maxOffsetY));
+
+            setNoButtonTransform(newOffsetX, newOffsetY);
+          }
+
+          requestAnimationFrame(updateNoButton);
+        }
+
+        card.addEventListener('mousemove', function (e) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        });
+
+        requestAnimationFrame(updateNoButton);
+
+        // Floating background images: spawn forever from /bg_images folder, 8 directions (more spread), cap at 20
+        const floatingDogsEl = document.getElementById('floating-dogs');
+        const bgImages = [
+          'bg_images/dog.png', 'bg_images/dog1.png', 'bg_images/dog2.png', 'bg_images/dog3.png',
+          'bg_images/dog4.png', 'bg_images/dog5.png', 'bg_images/dog6.png', 'bg_images/dog7.png',
+          'bg_images/image0.jpeg', 'bg_images/image1.jpeg', 'bg_images/image2.jpeg', 'bg_images/image3.jpeg',
+          'bg_images/image4.jpeg', 'bg_images/image6.jpeg', 'bg_images/image7.jpeg', 'bg_images/image8.jpeg',
+          'bg_images/image9.jpeg'
+        ];
+        const directions = ['float-lr', 'float-rl', 'float-tb', 'float-bt', 'float-tl-br', 'float-tr-bl', 'float-bl-tr', 'float-br-tl'];
+        const MAX_DOGS = 20;
+        const SPAWN_INTERVAL_MIN = 10000;
+        const SPAWN_INTERVAL_MAX = 18000;
+
+        function styleFloatingDog(el) {
+          el.style.width = (112 + Math.random() * 336) + 'px';
+          el.style.animationDelay = (3 + Math.random() * 2) + 's';
+          el.style.animationDuration = (32 + Math.random() * 24) + 's';
+          var dir = directions.find(function (d) { return el.classList.contains(d); });
+          var isHorizontal = dir === 'float-lr' || dir === 'float-rl';
+          var isVertical = dir === 'float-tb' || dir === 'float-bt';
+          if (isHorizontal) {
+            el.style.top = (10 + Math.random() * 80) + '%';
+            el.style.left = '';
+          } else if (isVertical) {
+            el.style.left = (10 + Math.random() * 80) + '%';
+            el.style.top = '';
+          }
+        }
+
+        function spawnDog() {
+          if (floatingDogsEl.classList.contains('floating-dogs-hidden')) return;
+          var dogs = floatingDogsEl.querySelectorAll('.floating-dog');
+          if (dogs.length >= MAX_DOGS) {
+            if (dogs[0]) dogs[0].remove();
+          }
+          var img = document.createElement('img');
+          img.src = bgImages[Math.floor(Math.random() * bgImages.length)];
+          img.alt = '';
+          img.className = 'floating-dog ' + directions[Math.floor(Math.random() * directions.length)];
+          floatingDogsEl.appendChild(img);
+          styleFloatingDog(img);
+        }
+
+        floatingDogsEl.classList.remove('hidden');
+        for (var i = 0; i < 4; i++) spawnDog();
+        function scheduleNextDog() {
+          setTimeout(function () {
+            spawnDog();
+            scheduleNextDog();
+          }, SPAWN_INTERVAL_MIN + Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN));
+        }
+        scheduleNextDog();
+
+        // Yes button: play song, confetti + balloons, show music controls
+        const yesBtn = document.getElementById('yes-btn');
+        const audio = new Audio('song.mp3');
+        const musicControls = document.getElementById('music-controls');
+        const musicPlayPause = document.getElementById('music-play-pause');
+        const musicPlayPauseIcon = document.getElementById('music-play-pause-icon');
+        const musicVolume = document.getElementById('music-volume');
+        let confettiIntervalId = null;
+        let balloonIntervalId = null;
+
+        function stopCelebration() {
+          if (confettiIntervalId !== null) { clearInterval(confettiIntervalId); confettiIntervalId = null; }
+          if (balloonIntervalId !== null) { clearInterval(balloonIntervalId); balloonIntervalId = null; }
+        }
+
+        musicPlayPause.addEventListener('click', function () {
+          if (audio.paused) { audio.play().catch(function () {}); musicPlayPauseIcon.textContent = '❚❚'; }
+          else { audio.pause(); musicPlayPauseIcon.textContent = '▶'; }
+        });
+        musicVolume.addEventListener('input', function () { audio.volume = parseFloat(musicVolume.value); });
+
+        const musicReset = document.getElementById('music-reset');
+        function doReset() {
+          audio.pause();
+          audio.currentTime = 0;
+          stopCelebration();
+          document.querySelectorAll('.celebration-balloon').forEach(function (el) { el.remove(); });
+          musicControls.classList.add('hidden');
+          musicPlayPauseIcon.textContent = '▶';
+          valentineHeading.textContent = 'Swootie, will you be my valentine?';
+          noBtn.textContent = 'No';
+          noTooltip.classList.add('no-btn-tooltip-hidden');
+          noTooltip.setAttribute('aria-hidden', 'true');
+          setNoButtonTransform(0, 0);
+          noBtnConverted = false;
+          hasCelebrated = false;
+        }
+        musicReset.addEventListener('click', doReset);
+
+        const valentineHeading = document.getElementById('valentine-heading');
+        let hasCelebrated = false;
+
+        function doCelebration() {
+          if (hasCelebrated) return;
+          hasCelebrated = true;
+          valentineHeading.textContent = 'YAY! <3';
+          musicControls.classList.remove('hidden');
+          stopCelebration();
+          audio.play().catch(function () {});
+          musicPlayPauseIcon.textContent = '❚❚';
+
+          if (typeof confetti === 'function') {
+            confetti({ particleCount: 125, spread: 100, origin: { y: 0.6 } });
+            setTimeout(function () { confetti({ particleCount: 85, spread: 80, origin: { y: 0.5, x: 0.3 } }); }, 200);
+            setTimeout(function () { confetti({ particleCount: 85, spread: 80, origin: { y: 0.5, x: 0.7 } }); }, 400);
+            confettiIntervalId = setInterval(function () {
+              confetti({ particleCount: 80, spread: 90, origin: { y: 0.6 } });
+              confetti({ particleCount: 50, spread: 70, origin: { y: 0.5, x: 0.2 } });
+              confetti({ particleCount: 50, spread: 70, origin: { y: 0.5, x: 0.8 } });
+            }, 1200);
+          }
+
+          const balloonColors = ['#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#be123c'];
+          function spawnBalloon() {
+            const balloon = document.createElement('div');
+            balloon.className = 'celebration-balloon';
+            balloon.style.left = (5 + Math.random() * 90) + '%';
+            balloon.style.backgroundColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+            balloon.style.animationDelay = (Math.random() * 0.5) + 's';
+            document.body.appendChild(balloon);
+            setTimeout(function () { balloon.remove(); }, 8000);
+          }
+          for (let b = 0; b < 17; b++) { setTimeout(spawnBalloon, b * 120); }
+          balloonIntervalId = setInterval(spawnBalloon, 400);
+
+          audio.addEventListener('ended', function onEnded() {
+            stopCelebration();
+            musicPlayPauseIcon.textContent = '▶';
+            audio.removeEventListener('ended', onEnded);
+          });
+        }
+
+        yesBtn.addEventListener('click', doCelebration);
+
+        noBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!noBtnConverted) {
+            noBtnConverted = true;
+            noBtn.textContent = 'Yes';
+            noTooltip.setAttribute('aria-hidden', 'false');
+            noTooltip.classList.remove('no-btn-tooltip-hidden');
+            const btnRect = noBtn.getBoundingClientRect();
+            const zoneRect = zone.getBoundingClientRect();
+            noTooltip.style.left = (btnRect.left - zoneRect.left + btnRect.width / 2) + 'px';
+            noTooltip.style.top = (btnRect.top - zoneRect.top - 8) + 'px';
+            noTooltip.style.transform = 'translate(-50%, -100%)';
+          } else {
+            doCelebration();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+/* Valentine's theme – Tailwind CDN handles layout; this adds theme polish */
+
+:root {
+  --valentine-pink: #ec4899;
+  --valentine-rose: #be123c;
+  --valentine-cream: #fff1f2;
+  --valentine-blush: #fce7f3;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Name gate: input reads as part of the sentence, one consistent underline (width of "swootie"), text above the line */
+.name-input-wrap {
+  display: inline-block;
+  position: relative;
+  vertical-align: baseline;
+}
+.name-input-measure {
+  visibility: hidden;
+  white-space: nowrap;
+  font-family: inherit;
+}
+/* Single full-width underline, always visible */
+.name-input-underline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  border-bottom: 2px solid rgba(244, 63, 94, 0.6);
+  pointer-events: none;
+}
+.name-input-wrap .name-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  box-sizing: border-box;
+  z-index: 1;
+  /* Space between text baseline and underline so letters sit above the line without touching */
+  padding-bottom: 0.25em;
+}
+
+/* Soft Valentine gradient background */
+.valentine-bg {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 25%, #f9a8d4 50%, #f472b6 75%, #ec4899 100%);
+  background-attachment: fixed;
+}
+
+/* Centered card – cream with subtle rose tint */
+.valentine-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fff1f2 100%);
+  border: 1px solid rgba(190, 18, 60, 0.15);
+  /* Heart cursor when inside the box */
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23ec4899' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E") 12 12, auto;
+}
+
+/* Yes button – solid Valentine pink/rose */
+.valentine-btn-yes {
+  background: linear-gradient(135deg, #ec4899, #be123c);
+}
+
+.valentine-btn-yes:hover {
+  background: linear-gradient(135deg, #db2777, #9f1239);
+  transform: scale(1.02);
+}
+
+/* No button tooltip: above button when they click No */
+.no-btn-tooltip {
+  position: absolute;
+  white-space: nowrap;
+  padding: 0.35rem 0.6rem;
+  background: rgba(30, 41, 59, 0.95);
+  color: #fff;
+  font-size: 0.8rem;
+  border-radius: 0.375rem;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+}
+.no-btn-tooltip:not(.no-btn-tooltip-hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+.no-btn-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -4px;
+  border: 4px solid transparent;
+  border-top-color: rgba(30, 41, 59, 0.95);
+}
+
+/* White top of box: height = GIF height + 20px, GIF 2x size, rotated 17° */
+.snoopy-top {
+  padding: 50px 0;
+  overflow: hidden;
+}
+.snoopy-gif-rotated {
+  display: block;
+  margin: 0 auto;
+  width: 32rem;
+  height: auto;
+  max-width: none;
+  transform: rotate(17deg);
+}
+@media (min-width: 640px) {
+  .snoopy-gif-rotated {
+    width: 40rem;
+  }
+}
+
+/* No button transform is controlled by JS (fleeing), so no hover transform */
+
+/* Floating dogs on page background: 4x bigger, slower scroll, random direction */
+.floating-dogs-bg .floating-dog {
+  position: absolute;
+  width: 288px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.75;
+}
+/* Horizontal: start fully off-screen (big dogs can be 448px; left = left edge so use -60% / 160%) */
+.floating-dogs-bg .floating-dog.float-lr {
+  top: 50%;
+  left: -60%;
+  transform: translateY(-50%);
+  animation: float-h 40s linear infinite;
+}
+.floating-dogs-bg .floating-dog.float-rl {
+  top: 50%;
+  left: 160%;
+  transform: translateY(-50%);
+  animation: float-h 40s linear infinite reverse;
+}
+@keyframes float-h {
+  0% { left: -60%; }
+  100% { left: 160%; }
+}
+/* Vertical: start fully off-screen */
+.floating-dogs-bg .floating-dog.float-tb {
+  left: 50%;
+  top: -60%;
+  transform: translateX(-50%);
+  animation: float-v 40s linear infinite;
+}
+.floating-dogs-bg .floating-dog.float-bt {
+  left: 50%;
+  top: 160%;
+  transform: translateX(-50%);
+  animation: float-v 40s linear infinite reverse;
+}
+@keyframes float-v {
+  0% { top: -60%; }
+  100% { top: 160%; }
+}
+/* Diagonal directions: more spread, less overlap; start off-screen */
+.floating-dogs-bg .floating-dog.float-tl-br {
+  left: -60%;
+  top: -60%;
+  transform: none;
+  animation: float-tl-br 40s linear infinite;
+}
+.floating-dogs-bg .floating-dog.float-tr-bl {
+  left: 160%;
+  top: -60%;
+  transform: none;
+  animation: float-tr-bl 40s linear infinite;
+}
+.floating-dogs-bg .floating-dog.float-bl-tr {
+  left: -60%;
+  top: 160%;
+  transform: none;
+  animation: float-bl-tr 40s linear infinite;
+}
+.floating-dogs-bg .floating-dog.float-br-tl {
+  left: 160%;
+  top: 160%;
+  transform: none;
+  animation: float-br-tl 40s linear infinite;
+}
+@keyframes float-tl-br {
+  0% { left: -60%; top: -60%; }
+  100% { left: 160%; top: 160%; }
+}
+@keyframes float-tr-bl {
+  0% { left: 160%; top: -60%; }
+  100% { left: -60%; top: 160%; }
+}
+@keyframes float-bl-tr {
+  0% { left: -60%; top: 160%; }
+  100% { left: 160%; top: -60%; }
+}
+@keyframes float-br-tl {
+  0% { left: 160%; top: 160%; }
+  100% { left: -60%; top: -60%; }
+}
+.floating-dogs-bg.floating-dogs-hidden .floating-dog {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+/* Music controls: screen reader label */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Balloons on Yes click */
+.celebration-balloon {
+  position: fixed;
+  bottom: -60px;
+  width: 36px;
+  height: 48px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: balloon-rise 8s ease-in forwards;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: inset -4px -4px 8px rgba(0, 0, 0, 0.1);
+}
+.celebration-balloon::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  margin-left: -1px;
+  width: 2px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1px;
+}
+@keyframes balloon-rise {
+  0% { transform: translateX(-50%) translateY(0) scale(0.8); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-120vh) scale(1); opacity: 0.8; }
+}
