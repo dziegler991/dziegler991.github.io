@@ -85,11 +85,20 @@ const Filters = (() => {
             };
         }
 
-        // Doesn't qualify under any NE-relevant category
+        // Non-NE hybrid
+        if (isHybrid) {
+            return {
+                qualifies: true,
+                category: 'hybrid-ne',
+                reason: `Hybrid position in ${job.job_city || ''}, ${jobState || jobCountry}`
+            };
+        }
+
+        // Non-NE on-site - still show it, categorize as on-site
         return {
-            qualifies: false,
-            category: null,
-            reason: 'Not a New England or qualifying remote position'
+            qualifies: true,
+            category: 'onsite-ne',
+            reason: `On-site position in ${job.job_city || ''}, ${jobState || jobCountry}`
         };
     }
 
@@ -143,14 +152,15 @@ const Filters = (() => {
     }
 
     /**
-     * Score job relevance based on keywords and themes (0-10)
+     * Score job relevance based on keywords, themes, and sports/marketing fit (0-10)
+     * Automatically boosts jobs matching sports, winter sports, and marketing themes.
      * @param {Object} job - Job object
      * @param {string} keywords - Search keywords
      * @param {Array<string>} themes - Optional theme keywords
      * @returns {number} Relevance score 0-10
      */
     function scoreJobRelevance(job, keywords, themes = []) {
-        if (!keywords && themes.length === 0) return 5; // Neutral score
+        if (!keywords && themes.length === 0) return 5;
 
         let score = 0;
         const maxScore = 10;
@@ -167,34 +177,49 @@ const Filters = (() => {
         const title = (job.job_title || '').toLowerCase();
         const description = (job.job_description || '').toLowerCase();
         const company = (job.employer_name || '').toLowerCase();
+        const allText = title + ' ' + description + ' ' + company;
 
-        // Combine highlights into searchable text
         const qualifications = (job.job_highlights?.Qualifications || []).join(' ').toLowerCase();
         const responsibilities = (job.job_highlights?.Responsibilities || []).join(' ').toLowerCase();
 
-        // Title matches (highest weight: up to 4 points)
+        // Title matches (up to 3 points)
         let titleMatches = 0;
         for (const term of searchTerms) {
             if (title.includes(term)) titleMatches++;
         }
-        score += Math.min(4, titleMatches * 2);
+        score += Math.min(3, titleMatches * 1.5);
 
-        // Description/highlights matches (up to 3 points)
+        // Description/highlights matches (up to 2 points)
         let contentMatches = 0;
         for (const term of searchTerms) {
             if (description.includes(term)) contentMatches++;
             if (qualifications.includes(term)) contentMatches += 0.5;
             if (responsibilities.includes(term)) contentMatches += 0.5;
         }
-        score += Math.min(3, contentMatches);
+        score += Math.min(2, contentMatches);
 
-        // Theme matches (up to 2 points)
+        // User-provided theme matches (up to 1 point)
         let themeMatches = 0;
         for (const theme of themeTerms) {
-            if (title.includes(theme)) themeMatches += 1.5;
+            if (title.includes(theme)) themeMatches += 1;
             if (description.includes(theme)) themeMatches += 0.5;
         }
-        score += Math.min(2, themeMatches);
+        score += Math.min(1, themeMatches);
+
+        // Built-in sports/winter sports bonus (up to 2 points)
+        let sportsScore = 0;
+        for (const theme of (CONFIG.SPORTS_THEMES || [])) {
+            if (title.includes(theme)) { sportsScore += 1.5; break; }
+        }
+        for (const theme of (CONFIG.SPORTS_THEMES || [])) {
+            if (allText.includes(theme)) { sportsScore += 0.5; break; }
+        }
+        score += Math.min(2, sportsScore);
+
+        // Built-in marketing role bonus (up to 1 point)
+        for (const kw of (CONFIG.MARKETING_KEYWORDS || [])) {
+            if (title.includes(kw)) { score += 1; break; }
+        }
 
         // Company name match bonus (1 point)
         for (const term of searchTerms) {

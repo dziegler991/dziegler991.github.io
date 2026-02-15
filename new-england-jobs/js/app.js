@@ -1,20 +1,15 @@
 /**
- * New England Jobs - Main Application
+ * Sports Marketing Jobs - Main Application
  * Initialization, event binding, and orchestration
  */
 
 const App = (() => {
-    // Application state
     let currentPage = 1;
     let currentKeywords = '';
     let filteredJobs = [];
 
-    /**
-     * Initialize the application
-     */
     function init() {
         UI.initImageObserver();
-        UI.checkApiKeyBanner();
         UI.updateSavedCount();
         UI.updateAlertsCount();
 
@@ -22,9 +17,6 @@ const App = (() => {
         detectPage();
     }
 
-    /**
-     * Detect which page we're on and initialize accordingly
-     */
     function detectPage() {
         const path = window.location.pathname;
 
@@ -41,9 +33,6 @@ const App = (() => {
     // Search Page
     // ==========================================
 
-    /**
-     * Initialize the search page
-     */
     function initSearchPage() {
         const searchForm = document.getElementById('search-form');
         const filtersToggle = document.getElementById('filters-toggle');
@@ -100,12 +89,13 @@ const App = (() => {
             apiKeyBtn.addEventListener('click', handleSaveApiKey);
         }
 
-        // Show welcome state
+        // Show welcome state; hide API key form if key already saved
         UI.showState('welcome');
+        updateApiKeyVisibility();
     }
 
     /**
-     * Handle API key save
+     * Handle API key save from the inline welcome form
      */
     function handleSaveApiKey() {
         const input = document.getElementById('api-key-input');
@@ -118,13 +108,20 @@ const App = (() => {
         }
 
         JobsAPI.saveApiKey(key);
-        UI.checkApiKeyBanner();
-        Utils.showToast('API key saved!', 'success');
+        updateApiKeyVisibility();
+        Utils.showToast('API key saved! You can now search for jobs.', 'success');
     }
 
     /**
-     * Toggle filters panel
+     * Hide the API key form if a key is already stored
      */
+    function updateApiKeyVisibility() {
+        const apiKeySection = document.getElementById('api-key-inline');
+        if (apiKeySection) {
+            apiKeySection.hidden = JobsAPI.hasApiKey();
+        }
+    }
+
     function toggleFilters() {
         const toggle = document.getElementById('filters-toggle');
         const panel = document.getElementById('filters-panel');
@@ -135,26 +132,20 @@ const App = (() => {
         panel.hidden = isExpanded;
     }
 
-    /**
-     * Reset all filters to defaults
-     */
     function resetFilters() {
-        // Reset category checkboxes
+        // Default: remote categories checked, hybrid/onsite unchecked
         document.querySelectorAll('input[name="category"]').forEach(cb => {
-            cb.checked = true;
+            cb.checked = cb.value === 'remote' || cb.value === 'remote-us';
         });
 
-        // Reset state checkboxes
         document.querySelectorAll('input[name="state"]').forEach(cb => {
             cb.checked = true;
         });
 
-        // Reset job type checkboxes
         document.querySelectorAll('input[name="jobType"]').forEach(cb => {
             cb.checked = cb.value === 'FULLTIME';
         });
 
-        // Reset selects
         const datePosted = document.getElementById('date-posted');
         const minSalary = document.getElementById('min-salary');
         const sortBy = document.getElementById('sort-by');
@@ -165,15 +156,15 @@ const App = (() => {
         Utils.showToast('Filters reset.', 'info');
     }
 
-    /**
-     * Get current filter values from the UI
-     * @returns {Object} Filter values
-     */
     function getFilterValues() {
         const categories = Array.from(document.querySelectorAll('input[name="category"]:checked'))
             .map(cb => cb.value);
-        const states = Array.from(document.querySelectorAll('input[name="state"]:checked'))
+        let states = Array.from(document.querySelectorAll('input[name="state"]:checked'))
             .map(cb => cb.value);
+        // Default to all states if no state checkboxes exist (remote-first mode)
+        if (states.length === 0) {
+            states = Object.keys(CONFIG.NE_STATES);
+        }
         const jobTypes = Array.from(document.querySelectorAll('input[name="jobType"]:checked'))
             .map(cb => cb.value);
         const datePosted = document.getElementById('date-posted')?.value || 'week';
@@ -183,9 +174,6 @@ const App = (() => {
         return { categories, states, jobTypes, datePosted, minSalary, sortBy };
     }
 
-    /**
-     * Handle search form submission
-     */
     async function handleSearch() {
         const input = document.getElementById('search-keywords');
         const keywords = (input?.value || '').trim();
@@ -198,7 +186,6 @@ const App = (() => {
 
         if (!JobsAPI.hasApiKey()) {
             Utils.showToast('Please add your API key first.', 'warning');
-            UI.checkApiKeyBanner();
             return;
         }
 
@@ -214,7 +201,7 @@ const App = (() => {
             const rawJobs = await JobsAPI.withRetry(() =>
                 JobsAPI.searchAllCategories(keywords, {
                     datePosted: filters.datePosted,
-                    states: filters.states,
+                    categories: filters.categories,
                     employmentTypes: filters.jobTypes,
                     page: 1
                 }, (completed, total) => {
@@ -225,10 +212,8 @@ const App = (() => {
                 })
             );
 
-            // Store raw results globally for save functionality
             window._currentSearchResults = rawJobs;
 
-            // Apply filters and scoring
             filteredJobs = Filters.applyFilters(rawJobs, {
                 categories: filters.categories,
                 states: filters.states,
@@ -244,7 +229,6 @@ const App = (() => {
                 renderResults();
             }
 
-            // Check alerts against new results
             const alertResults = Alerts.checkAlerts(rawJobs);
             if (alertResults.totalNew > 0) {
                 Utils.showToast(
@@ -269,9 +253,6 @@ const App = (() => {
         }
     }
 
-    /**
-     * Re-apply filters and re-render (when filters change)
-     */
     function refilterAndRender() {
         const filters = getFilterValues();
         const rawJobs = window._currentSearchResults || [];
@@ -294,9 +275,6 @@ const App = (() => {
         }
     }
 
-    /**
-     * Render current results page
-     */
     function renderResults() {
         const breakdown = Filters.getCategoryBreakdown(filteredJobs);
         UI.updateResultsHeader(filteredJobs.length, breakdown);
@@ -304,10 +282,6 @@ const App = (() => {
         UI.updatePagination(currentPage, filteredJobs.length, CONFIG.RESULTS_PER_PAGE);
     }
 
-    /**
-     * Change page
-     * @param {number} delta - Page change (+1 or -1)
-     */
     function changePage(delta) {
         const totalPages = Math.ceil(filteredJobs.length / CONFIG.RESULTS_PER_PAGE);
         const newPage = currentPage + delta;
@@ -365,7 +339,6 @@ const App = (() => {
     // ==========================================
 
     function bindGlobalEvents() {
-        // Mobile nav toggle
         document.querySelectorAll('.nav-toggle').forEach(toggle => {
             toggle.addEventListener('click', () => {
                 const navLinks = toggle.closest('.main-nav')?.querySelector('.nav-links');
@@ -377,7 +350,6 @@ const App = (() => {
             });
         });
 
-        // Close modals on overlay click
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
@@ -387,7 +359,6 @@ const App = (() => {
             });
         });
 
-        // Close modals on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -399,10 +370,8 @@ const App = (() => {
             }
         });
 
-        // Close modal buttons
         document.getElementById('modal-close-btn')?.addEventListener('click', UI.closeJobDetail);
 
-        // Online/offline detection
         window.addEventListener('online', () => {
             Utils.showToast('You are back online.', 'success');
         });
@@ -412,7 +381,6 @@ const App = (() => {
         });
     }
 
-    // Start the app when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

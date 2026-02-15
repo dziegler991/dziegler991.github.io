@@ -1,11 +1,10 @@
 /**
- * New England Jobs - Configuration
+ * Sports Marketing Jobs - Configuration
  *
  * WARNING: API keys in client-side code are visible to anyone who inspects the source.
  * Use free-tier API keys only. For production with sensitive keys, use a serverless backend.
  */
 
-// Try to load key from localStorage (set via UI) or use placeholder
 const CONFIG = {
     // RapidAPI Configuration
     RAPID_API_KEY: localStorage.getItem('ne_jobs_api_key') || '',
@@ -16,7 +15,27 @@ const CONFIG = {
     FALLBACK_API_HOST: 'jobs-search-realtime-data.p.rapidapi.com',
     FALLBACK_API_URL: 'https://jobs-search-realtime-data.p.rapidapi.com',
 
-    // New England States
+    // Sports / Winter Sports themes for relevance boosting
+    SPORTS_THEMES: [
+        'skiing', 'snowboarding', 'winter sports', 'ski resort', 'ski',
+        'outdoor recreation', 'outdoor', 'adventure', 'mountain',
+        'sports', 'athletics', 'athletic', 'fitness',
+        'snow sports', 'ice hockey', 'hockey', 'skating',
+        'burton', 'vail', 'ikon', 'epic pass',
+        'patagonia', 'the north face', 'columbia sportswear',
+        'rei', 'backcountry', 'yeti'
+    ],
+
+    // Marketing role keywords for relevance boosting
+    MARKETING_KEYWORDS: [
+        'marketing', 'brand', 'social media', 'content',
+        'digital marketing', 'communications', 'PR', 'public relations',
+        'campaign', 'sponsorship', 'partnership', 'events',
+        'creative', 'copywriter', 'email marketing', 'SEO',
+        'community manager', 'influencer', 'brand ambassador'
+    ],
+
+    // Keep NE states for optional local filtering
     NE_STATES: {
         CT: { name: 'Connecticut', cities: ['Hartford', 'New Haven', 'Stamford', 'Bridgeport', 'Waterbury'] },
         MA: { name: 'Massachusetts', cities: ['Boston', 'Cambridge', 'Worcester', 'Springfield', 'Lowell'] },
@@ -26,26 +45,25 @@ const CONFIG = {
         VT: { name: 'Vermont', cities: ['Burlington', 'South Burlington', 'Rutland', 'Barre', 'Montpelier'] }
     },
 
-    // Major NE cities for search queries
     MAJOR_NE_CITIES: ['Boston', 'Hartford', 'Providence', 'Portland ME', 'Manchester NH', 'Burlington VT'],
 
-    // Job Categories
+    // Job Categories - remote-first
     JOB_CATEGORIES: {
         'remote': { label: 'Remote', color: '#10b981', icon: '\uD83C\uDF10', cssClass: 'badge-remote' },
         'remote-us': { label: 'Remote (US)', color: '#3b82f6', icon: '\uD83C\uDDFA\uD83C\uDDF8', cssClass: 'badge-remote-us' },
-        'hybrid-ne': { label: 'Hybrid (NE)', color: '#f59e0b', icon: '\uD83C\uDFE2', cssClass: 'badge-hybrid' },
-        'onsite-ne': { label: 'On-site (NE)', color: '#6366f1', icon: '\uD83D\uDCCD', cssClass: 'badge-onsite' },
+        'hybrid-ne': { label: 'Hybrid', color: '#f59e0b', icon: '\uD83C\uDFE2', cssClass: 'badge-hybrid' },
+        'onsite-ne': { label: 'On-site', color: '#6366f1', icon: '\uD83D\uDCCD', cssClass: 'badge-onsite' },
         'remote-ne-company': { label: 'Remote (NE Co.)', color: '#8b5cf6', icon: '\u2B50', cssClass: 'badge-remote-ne' }
     },
 
     // Rate Limiting
     RATE_LIMIT: {
         maxRequests: 10,
-        windowMs: 60000 // 1 minute
+        windowMs: 60000
     },
 
     // Cache
-    CACHE_DURATION_MS: 5 * 60 * 1000, // 5 minutes
+    CACHE_DURATION_MS: 5 * 60 * 1000,
 
     // Pagination
     RESULTS_PER_PAGE: 20,
@@ -53,9 +71,9 @@ const CONFIG = {
     // Debounce
     DEBOUNCE_MS: 300,
 
-    // Default preferences
+    // Default preferences - remote-first
     DEFAULT_PREFERENCES: {
-        defaultCategories: ['remote', 'remote-us', 'hybrid-ne', 'onsite-ne', 'remote-ne-company'],
+        defaultCategories: ['remote', 'remote-us'],
         defaultStates: ['CT', 'MA', 'ME', 'NH', 'RI', 'VT'],
         resultsPerPage: 20,
         sortBy: 'relevance',

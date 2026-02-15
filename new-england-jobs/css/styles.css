@@ -524,65 +524,47 @@ a:focus-visible {
     gap: var(--space-2);
 }
 
-/* --- API Key Banner --- */
-.api-key-banner {
-    background: var(--color-info);
-    color: var(--color-white);
-    border-radius: var(--radius-lg);
-    padding: var(--space-6);
-    margin-bottom: var(--space-8);
-}
-
-.api-key-banner h2 {
-    margin-bottom: var(--space-2);
-}
-
-.api-key-banner p {
-    margin-bottom: var(--space-4);
-    opacity: 0.9;
+/* --- Inline API Key Form (welcome state) --- */
+.api-key-inline {
+    margin: var(--space-6) auto;
+    max-width: 480px;
 }
 
 .api-key-form {
     display: flex;
     gap: var(--space-2);
-    max-width: 500px;
 }
 
 .api-key-form input {
     flex: 1;
     padding: var(--space-2) var(--space-3);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid var(--color-gray-300);
     border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.15);
-    color: var(--color-white);
+    background: var(--color-white);
+    color: var(--color-gray-800);
+    font-family: var(--font-sans);
     font-size: var(--font-size-sm);
     min-height: 44px;
 }
 
 .api-key-form input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-gray-400);
 }
 
 .api-key-form input:focus {
     outline: none;
-    border-color: var(--color-white);
-    background: rgba(255, 255, 255, 0.25);
-}
-
-.api-key-form .btn {
-    background: var(--color-white);
-    color: var(--color-info);
-    border-color: var(--color-white);
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .api-key-help {
-    margin-top: var(--space-3);
-    font-size: var(--font-size-sm);
+    margin-top: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-400);
 }
 
 .api-key-help a {
-    color: var(--color-white);
-    text-decoration: underline;
+    color: var(--color-primary-light);
 }
 
 /* --- Rate Limit Warning --- */

@@ -195,27 +195,24 @@ const JobsAPI = (() => {
             baseOptions.employmentTypes = options.employmentTypes;
         }
 
-        // 1. Remote jobs query
+        // Primary: remote jobs query
         queries.push({
             query: `${keywords} remote`,
             options: { ...baseOptions, remoteOnly: true }
         });
 
-        // 2. City-specific queries for major NE cities
-        const selectedStates = options.states || Object.keys(CONFIG.NE_STATES);
-        const citiesToSearch = [];
+        // Additional remote variant to catch more results
+        queries.push({
+            query: `${keywords}`,
+            options: { ...baseOptions, remoteOnly: true }
+        });
 
-        for (const stateCode of selectedStates) {
-            const stateInfo = CONFIG.NE_STATES[stateCode];
-            if (stateInfo) {
-                // Use the first (major) city from each selected state
-                citiesToSearch.push(stateInfo.cities[0] + ', ' + stateCode);
-            }
-        }
-
-        for (const city of citiesToSearch) {
+        // If hybrid/onsite categories are selected, add a general (non-remote) query
+        const categories = options.categories || [];
+        const includesNonRemote = categories.includes('hybrid-ne') || categories.includes('onsite-ne');
+        if (includesNonRemote) {
             queries.push({
-                query: `${keywords} in ${city}`,
+                query: `${keywords}`,
                 options: { ...baseOptions }
             });
         }

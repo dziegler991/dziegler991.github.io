@@ -460,16 +460,6 @@ const UI = (() => {
         if (spinner) spinner.hidden = !loading;
     }
 
-    /**
-     * Check and show API key banner if needed
-     */
-    function checkApiKeyBanner() {
-        const banner = document.getElementById('api-key-banner');
-        if (banner) {
-            banner.hidden = JobsAPI.hasApiKey();
-        }
-    }
-
     return {
         initImageObserver,
         createJobCard,
@@ -482,7 +472,6 @@ const UI = (() => {
         updatePagination,
         updateSavedCount,
         updateAlertsCount,
-        setSearchLoading,
-        checkApiKeyBanner
+        setSearchLoading
     };
 })();

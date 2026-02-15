@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Search and discover job opportunities across New England - remote, hybrid, and on-site positions in CT, MA, ME, NH, RI, and VT.">
+    <meta name="description" content="Find remote marketing jobs in the sports and winter sports industry. Search thousands of listings from top job boards.">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https://jsearch.p.rapidapi.com https://jobs-search-realtime-data.p.rapidapi.com;">
-    <title>New England Jobs - Job Search Aggregator</title>
+    <title>Sports Marketing Jobs - Remote Job Search</title>
     <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
@@ -18,9 +18,9 @@
     <!-- Header / Navigation -->
     <header class="site-header" role="banner">
         <div class="container header-content">
-            <a href="index.html" class="logo" aria-label="New England Jobs home">
-                <span class="logo-icon" aria-hidden="true">&#9733;</span>
-                <span class="logo-text">NE Jobs</span>
+            <a href="index.html" class="logo" aria-label="Sports Marketing Jobs home">
+                <span class="logo-icon" aria-hidden="true">&#9978;</span>
+                <span class="logo-text">Sports Marketing Jobs</span>
             </a>
             <nav class="main-nav" role="navigation" aria-label="Main navigation">
                 <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -39,31 +39,15 @@
 
     <!-- Main Content -->
     <main id="main-content" class="container">
-        <!-- API Key Setup Banner -->
-        <div id="api-key-banner" class="api-key-banner" role="alert" hidden>
-            <div class="api-key-banner-content">
-                <h2>API Key Required</h2>
-                <p>To search for jobs, you need a RapidAPI key for the JSearch API.</p>
-                <div class="api-key-form">
-                    <label for="api-key-input" class="sr-only">Enter your RapidAPI key</label>
-                    <input type="password" id="api-key-input" placeholder="Enter your RapidAPI key" autocomplete="off">
-                    <button id="save-api-key-btn" class="btn btn-primary">Save Key</button>
-                </div>
-                <p class="api-key-help">
-                    <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener noreferrer">Get a free API key from RapidAPI</a>
-                </p>
-            </div>
-        </div>
-
         <!-- Search Section -->
         <section class="search-section" aria-label="Job search">
-            <h1 class="search-title">Find Jobs in New England</h1>
-            <p class="search-subtitle">Search remote, hybrid, and on-site positions across CT, MA, ME, NH, RI, and VT</p>
+            <h1 class="search-title">Sports Marketing Jobs</h1>
+            <p class="search-subtitle">Find remote marketing positions in sports, winter sports, and outdoor recreation</p>
 
             <form id="search-form" class="search-form" role="search" aria-label="Search jobs">
                 <div class="search-input-group">
                     <label for="search-keywords" class="sr-only">Search keywords</label>
-                    <input type="text" id="search-keywords" class="search-input" placeholder="Job title, keywords, or company..." autocomplete="off" aria-describedby="search-help">
+                    <input type="text" id="search-keywords" class="search-input" placeholder="e.g. marketing manager, social media, brand marketing..." autocomplete="off" aria-describedby="search-help" value="sports marketing">
                     <button type="submit" class="btn btn-primary search-btn" id="search-btn">
                         <span class="search-btn-text">Search</span>
                         <span class="search-btn-loading" hidden aria-hidden="true">
@@ -71,7 +55,7 @@
                         </span>
                     </button>
                 </div>
-                <p id="search-help" class="search-help">Try: "software engineer", "data analyst", "project manager"</p>
+                <p id="search-help" class="search-help">Try: "sports marketing", "marketing coordinator skiing", "social media manager outdoor"</p>
             </form>
 
             <!-- Filters -->
@@ -89,7 +73,7 @@
                             <label class="checkbox-label">
                                 <input type="checkbox" name="category" value="remote" checked>
                                 <span class="checkbox-custom"></span>
-                                <span class="badge badge-remote">Remote</span>
+                                <span class="badge badge-remote">Remote (Anywhere)</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" name="category" value="remote-us" checked>
@@ -97,56 +81,14 @@
                                 <span class="badge badge-remote-us">Remote (US)</span>
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="category" value="hybrid-ne" checked>
+                                <input type="checkbox" name="category" value="hybrid-ne">
                                 <span class="checkbox-custom"></span>
-                                <span class="badge badge-hybrid">Hybrid (NE)</span>
+                                <span class="badge badge-hybrid">Hybrid</span>
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="category" value="onsite-ne" checked>
+                                <input type="checkbox" name="category" value="onsite-ne">
                                 <span class="checkbox-custom"></span>
-                                <span class="badge badge-onsite">On-site (NE)</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="category" value="remote-ne-company" checked>
-                                <span class="checkbox-custom"></span>
-                                <span class="badge badge-remote-ne">Remote (NE Co.)</span>
-                            </label>
-                        </div>
-                    </fieldset>
-
-                    <!-- State Filters -->
-                    <fieldset class="filter-group">
-                        <legend>New England States</legend>
-                        <div class="filter-options checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="state" value="CT" checked>
-                                <span class="checkbox-custom"></span>
-                                Connecticut
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="state" value="MA" checked>
-                                <span class="checkbox-custom"></span>
-                                Massachusetts
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="state" value="ME" checked>
-                                <span class="checkbox-custom"></span>
-                                Maine
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="state" value="NH" checked>
-                                <span class="checkbox-custom"></span>
-                                New Hampshire
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="state" value="RI" checked>
-                                <span class="checkbox-custom"></span>
-                                Rhode Island
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="state" value="VT" checked>
-                                <span class="checkbox-custom"></span>
-                                Vermont
+                                <span class="badge badge-onsite">On-site</span>
                             </label>
                         </div>
                     </fieldset>
@@ -259,15 +201,24 @@
 
         <!-- Welcome State -->
         <div class="welcome-state" id="welcome-state">
-            <div class="welcome-icon" aria-hidden="true">&#127968;</div>
-            <h2>Welcome to New England Jobs</h2>
-            <p>Search for remote, hybrid, and on-site job opportunities across the six New England states.</p>
+            <div class="welcome-icon" aria-hidden="true">&#9978;</div>
+            <h2>Find Your Next Sports Marketing Role</h2>
+            <p>Search remote marketing jobs in sports, skiing, snowboarding, outdoor recreation, and more. Enter your API key below to get started.</p>
+            <div class="api-key-inline" id="api-key-inline">
+                <div class="api-key-form">
+                    <label for="api-key-input" class="sr-only">Enter your RapidAPI key</label>
+                    <input type="password" id="api-key-input" placeholder="Paste your RapidAPI key here" autocomplete="off">
+                    <button id="save-api-key-btn" class="btn btn-primary">Save Key</button>
+                </div>
+                <p class="api-key-help">
+                    <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener noreferrer">Get a free API key from RapidAPI</a>
+                </p>
+            </div>
             <div class="welcome-categories">
                 <span class="badge badge-remote">Remote</span>
                 <span class="badge badge-remote-us">Remote (US)</span>
-                <span class="badge badge-hybrid">Hybrid (NE)</span>
-                <span class="badge badge-onsite">On-site (NE)</span>
-                <span class="badge badge-remote-ne">Remote (NE Co.)</span>
+                <span class="badge badge-hybrid">Hybrid</span>
+                <span class="badge badge-onsite">On-site</span>
             </div>
         </div>
 
@@ -303,7 +254,7 @@
     <!-- Footer -->
     <footer class="site-footer" role="contentinfo">
         <div class="container footer-content">
-            <p>New England Jobs Aggregator &mdash; Powered by <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener noreferrer">JSearch API</a></p>
+            <p>Sports Marketing Jobs &mdash; Powered by <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener noreferrer">JSearch API</a></p>
             <p class="footer-note">Job data is sourced from multiple job boards. API key required for search functionality.</p>
         </div>
     </footer>
