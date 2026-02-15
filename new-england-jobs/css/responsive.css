@@ -1,0 +1,298 @@
+/* ===================================
+   New England Jobs - Responsive Styles
+   =================================== */
+
+/* --- Small screens (640px) --- */
+@media (max-width: 639px) {
+    .search-title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .search-subtitle {
+        font-size: var(--font-size-base);
+    }
+
+    .search-input-group {
+        flex-direction: column;
+    }
+
+    .search-btn {
+        width: 100%;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        background: var(--color-white);
+        flex-direction: column;
+        padding: var(--space-4);
+        border-bottom: 1px solid var(--color-gray-200);
+        box-shadow: var(--shadow-lg);
+        gap: var(--space-1);
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-link {
+        width: 100%;
+        padding: var(--space-3);
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-header-actions {
+        width: 100%;
+    }
+
+    .page-header-actions .btn {
+        flex: 1;
+    }
+
+    .filters-panel {
+        padding: var(--space-4);
+    }
+
+    .checkbox-group {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .results-sort {
+        width: 100%;
+    }
+
+    .results-sort .filter-select {
+        width: 100%;
+    }
+
+    .job-card-header {
+        flex-direction: column;
+    }
+
+    .job-card-badges {
+        margin-left: 0;
+    }
+
+    .job-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+
+    .job-card-actions {
+        width: 100%;
+    }
+
+    .job-card-actions .btn {
+        flex: 1;
+    }
+
+    .saved-job-header {
+        flex-direction: column;
+    }
+
+    .saved-job-actions {
+        width: 100%;
+    }
+
+    .saved-job-actions .btn {
+        flex: 1;
+    }
+
+    .saved-job-date {
+        margin-left: 0;
+    }
+
+    .alert-card-header {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    .alert-card-actions {
+        width: 100%;
+    }
+
+    .alert-card-actions .btn {
+        flex: 1;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        padding: var(--space-4);
+        margin: var(--space-2);
+        max-height: 95vh;
+    }
+
+    .job-detail-header {
+        flex-direction: column;
+    }
+
+    .job-detail-actions {
+        flex-direction: column;
+    }
+
+    .job-detail-actions .btn {
+        width: 100%;
+    }
+
+    .toast-container {
+        left: var(--space-4);
+        right: var(--space-4);
+        bottom: var(--space-4);
+    }
+
+    .toast {
+        min-width: auto;
+        max-width: none;
+    }
+
+    .pagination {
+        gap: var(--space-2);
+    }
+
+    .welcome-categories {
+        gap: var(--space-1);
+    }
+}
+
+/* --- Medium screens (768px) --- */
+@media (min-width: 640px) and (max-width: 767px) {
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .checkbox-group {
+        gap: var(--space-2);
+    }
+}
+
+/* --- Medium-Large screens (768px+) --- */
+@media (min-width: 768px) {
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding: 0 var(--space-6);
+    }
+}
+
+/* --- Large screens (1024px+) --- */
+@media (min-width: 1024px) {
+    .jobs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .search-title {
+        font-size: var(--font-size-4xl);
+    }
+
+    .container {
+        padding: 0 var(--space-8);
+    }
+}
+
+/* --- Extra Large screens (1280px+) --- */
+@media (min-width: 1280px) {
+    .jobs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* --- Print Styles --- */
+@media print {
+    .site-header,
+    .site-footer,
+    .search-section,
+    .filters-section,
+    .pagination,
+    .toast-container,
+    .modal-overlay,
+    .btn,
+    .nav-toggle {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .job-card {
+        break-inside: avoid;
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    a {
+        color: black;
+        text-decoration: underline;
+    }
+
+    a::after {
+        content: ' (' attr(href) ')';
+        font-size: 0.8em;
+        color: #666;
+    }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* --- High Contrast Mode --- */
+@media (prefers-contrast: high) {
+    :root {
+        --color-gray-200: #999;
+        --color-gray-300: #888;
+        --color-gray-400: #666;
+        --color-gray-500: #555;
+    }
+
+    .badge {
+        border: 1px solid currentColor;
+    }
+
+    .job-card {
+        border-width: 2px;
+    }
+
+    .checkbox-custom {
+        border-width: 3px;
+    }
+}

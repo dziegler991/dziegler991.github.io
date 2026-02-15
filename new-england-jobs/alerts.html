@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your job alerts for New England positions.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https://jsearch.p.rapidapi.com https://jobs-search-realtime-data.p.rapidapi.com;">
+    <title>Job Alerts - New England Jobs</title>
+    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header" role="banner">
+        <div class="container header-content">
+            <a href="index.html" class="logo" aria-label="New England Jobs home">
+                <span class="logo-icon" aria-hidden="true">&#9733;</span>
+                <span class="logo-text">NE Jobs</span>
+            </a>
+            <nav class="main-nav" role="navigation" aria-label="Main navigation">
+                <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span class="nav-toggle-bar"></span>
+                    <span class="nav-toggle-bar"></span>
+                    <span class="nav-toggle-bar"></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Search</a></li>
+                    <li><a href="saved-jobs.html" class="nav-link">Saved Jobs <span class="badge-count" id="saved-count" aria-label="saved jobs count"></span></a></li>
+                    <li><a href="alerts.html" class="nav-link active" aria-current="page">Alerts <span class="badge-count" id="alerts-count" aria-label="alerts count"></span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="container">
+        <section class="page-header">
+            <h1>Job Alerts</h1>
+            <div class="page-header-actions">
+                <button class="btn btn-primary" id="create-alert-btn">Create Alert</button>
+            </div>
+        </section>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="alerts-empty-state" hidden>
+            <div class="empty-icon" aria-hidden="true">&#128276;</div>
+            <h2>No alerts set up</h2>
+            <p>Create job alerts to get notified when new matching positions are posted.</p>
+            <button class="btn btn-primary" id="create-alert-empty-btn">Create Your First Alert</button>
+        </div>
+
+        <!-- Alerts List -->
+        <div class="alerts-list" id="alerts-list" role="list" aria-label="Job alerts"></div>
+    </main>
+
+    <!-- Create/Edit Alert Modal -->
+    <div class="modal-overlay" id="alert-modal" hidden role="dialog" aria-modal="true" aria-labelledby="alert-modal-title">
+        <div class="modal-content">
+            <button class="modal-close" id="alert-modal-close" aria-label="Close alert form">&times;</button>
+            <h2 id="alert-modal-title">Create Job Alert</h2>
+            <form id="alert-form" class="alert-form">
+                <div class="form-group">
+                    <label for="alert-keywords">Keywords</label>
+                    <input type="text" id="alert-keywords" placeholder="e.g., software engineer, react, python" required>
+                    <p class="form-help">Separate multiple keywords with commas</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="alert-themes">Themes (optional)</label>
+                    <input type="text" id="alert-themes" placeholder="e.g., frontend, backend, data science">
+                    <p class="form-help">Broader themes to match against</p>
+                </div>
+
+                <fieldset class="form-group">
+                    <legend>Categories</legend>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-category" value="remote" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="badge badge-remote">Remote</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-category" value="remote-us" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="badge badge-remote-us">Remote (US)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-category" value="hybrid-ne" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="badge badge-hybrid">Hybrid (NE)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-category" value="onsite-ne" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="badge badge-onsite">On-site (NE)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-category" value="remote-ne-company" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="badge badge-remote-ne">Remote (NE Co.)</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <legend>States</legend>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-state" value="CT" checked>
+                            <span class="checkbox-custom"></span>
+                            Connecticut
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-state" value="MA" checked>
+                            <span class="checkbox-custom"></span>
+                            Massachusetts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-state" value="ME" checked>
+                            <span class="checkbox-custom"></span>
+                            Maine
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-state" value="NH" checked>
+                            <span class="checkbox-custom"></span>
+                            New Hampshire
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-state" value="RI" checked>
+                            <span class="checkbox-custom"></span>
+                            Rhode Island
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-state" value="VT" checked>
+                            <span class="checkbox-custom"></span>
+                            Vermont
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="alert-min-salary">Minimum Salary</label>
+                        <select id="alert-min-salary" class="filter-select">
+                            <option value="0">Any</option>
+                            <option value="30000">$30,000+</option>
+                            <option value="50000">$50,000+</option>
+                            <option value="70000">$70,000+</option>
+                            <option value="90000">$90,000+</option>
+                            <option value="110000">$110,000+</option>
+                            <option value="130000">$130,000+</option>
+                            <option value="150000">$150,000+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="alert-frequency">Check Frequency</label>
+                        <select id="alert-frequency" class="filter-select">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <fieldset class="form-group">
+                    <legend>Job Types</legend>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-jobtype" value="FULLTIME" checked>
+                            <span class="checkbox-custom"></span>
+                            Full-time
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-jobtype" value="PARTTIME">
+                            <span class="checkbox-custom"></span>
+                            Part-time
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-jobtype" value="CONTRACTOR">
+                            <span class="checkbox-custom"></span>
+                            Contract
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="alert-jobtype" value="INTERN">
+                            <span class="checkbox-custom"></span>
+                            Internship
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="alert-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="alert-save-btn">Save Alert</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-content">
+            <p>New England Jobs Aggregator &mdash; Powered by <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener noreferrer">JSearch API</a></p>
+            <p class="footer-note">Job data is sourced from multiple job boards. API key required for search functionality.</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/saved-jobs.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

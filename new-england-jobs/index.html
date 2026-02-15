@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search and discover job opportunities across New England - remote, hybrid, and on-site positions in CT, MA, ME, NH, RI, and VT.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https://jsearch.p.rapidapi.com https://jobs-search-realtime-data.p.rapidapi.com;">
+    <title>New England Jobs - Job Search Aggregator</title>
+    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Skip navigation for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header / Navigation -->
+    <header class="site-header" role="banner">
+        <div class="container header-content">
+            <a href="index.html" class="logo" aria-label="New England Jobs home">
+                <span class="logo-icon" aria-hidden="true">&#9733;</span>
+                <span class="logo-text">NE Jobs</span>
+            </a>
+            <nav class="main-nav" role="navigation" aria-label="Main navigation">
+                <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span class="nav-toggle-bar"></span>
+                    <span class="nav-toggle-bar"></span>
+                    <span class="nav-toggle-bar"></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link active" aria-current="page">Search</a></li>
+                    <li><a href="saved-jobs.html" class="nav-link">Saved Jobs <span class="badge-count" id="saved-count" aria-label="saved jobs count"></span></a></li>
+                    <li><a href="alerts.html" class="nav-link">Alerts <span class="badge-count" id="alerts-count" aria-label="alerts count"></span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container">
+        <!-- API Key Setup Banner -->
+        <div id="api-key-banner" class="api-key-banner" role="alert" hidden>
+            <div class="api-key-banner-content">
+                <h2>API Key Required</h2>
+                <p>To search for jobs, you need a RapidAPI key for the JSearch API.</p>
+                <div class="api-key-form">
+                    <label for="api-key-input" class="sr-only">Enter your RapidAPI key</label>
+                    <input type="password" id="api-key-input" placeholder="Enter your RapidAPI key" autocomplete="off">
+                    <button id="save-api-key-btn" class="btn btn-primary">Save Key</button>
+                </div>
+                <p class="api-key-help">
+                    <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener noreferrer">Get a free API key from RapidAPI</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <section class="search-section" aria-label="Job search">
+            <h1 class="search-title">Find Jobs in New England</h1>
+            <p class="search-subtitle">Search remote, hybrid, and on-site positions across CT, MA, ME, NH, RI, and VT</p>
+
+            <form id="search-form" class="search-form" role="search" aria-label="Search jobs">
+                <div class="search-input-group">
+                    <label for="search-keywords" class="sr-only">Search keywords</label>
+                    <input type="text" id="search-keywords" class="search-input" placeholder="Job title, keywords, or company..." autocomplete="off" aria-describedby="search-help">
+                    <button type="submit" class="btn btn-primary search-btn" id="search-btn">
+                        <span class="search-btn-text">Search</span>
+                        <span class="search-btn-loading" hidden aria-hidden="true">
+                            <span class="spinner-small"></span>
+                        </span>
+                    </button>
+                </div>
+                <p id="search-help" class="search-help">Try: "software engineer", "data analyst", "project manager"</p>
+            </form>
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <button class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="filters-panel">
+                    <span>Filters</span>
+                    <span class="filters-toggle-icon" aria-hidden="true">&#9660;</span>
+                </button>
+
+                <div class="filters-panel" id="filters-panel" hidden>
+                    <!-- Job Category Filters -->
+                    <fieldset class="filter-group">
+                        <legend>Job Category</legend>
+                        <div class="filter-options checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="remote" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="badge badge-remote">Remote</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="remote-us" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="badge badge-remote-us">Remote (US)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="hybrid-ne" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="badge badge-hybrid">Hybrid (NE)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="onsite-ne" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="badge badge-onsite">On-site (NE)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="remote-ne-company" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="badge badge-remote-ne">Remote (NE Co.)</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- State Filters -->
+                    <fieldset class="filter-group">
+                        <legend>New England States</legend>
+                        <div class="filter-options checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="state" value="CT" checked>
+                                <span class="checkbox-custom"></span>
+                                Connecticut
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="state" value="MA" checked>
+                                <span class="checkbox-custom"></span>
+                                Massachusetts
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="state" value="ME" checked>
+                                <span class="checkbox-custom"></span>
+                                Maine
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="state" value="NH" checked>
+                                <span class="checkbox-custom"></span>
+                                New Hampshire
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="state" value="RI" checked>
+                                <span class="checkbox-custom"></span>
+                                Rhode Island
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="state" value="VT" checked>
+                                <span class="checkbox-custom"></span>
+                                Vermont
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- Date Posted Filter -->
+                    <fieldset class="filter-group">
+                        <legend>Date Posted</legend>
+                        <div class="filter-options">
+                            <label for="date-posted" class="sr-only">Date posted</label>
+                            <select id="date-posted" name="datePosted" class="filter-select">
+                                <option value="all">Any time</option>
+                                <option value="today">Last 24 hours</option>
+                                <option value="3days">Last 3 days</option>
+                                <option value="week" selected>Last week</option>
+                                <option value="month">Last month</option>
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <!-- Job Type Filter -->
+                    <fieldset class="filter-group">
+                        <legend>Job Type</legend>
+                        <div class="filter-options checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="jobType" value="FULLTIME" checked>
+                                <span class="checkbox-custom"></span>
+                                Full-time
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="jobType" value="PARTTIME">
+                                <span class="checkbox-custom"></span>
+                                Part-time
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="jobType" value="CONTRACTOR">
+                                <span class="checkbox-custom"></span>
+                                Contract
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="jobType" value="INTERN">
+                                <span class="checkbox-custom"></span>
+                                Internship
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- Salary Filter -->
+                    <fieldset class="filter-group">
+                        <legend>Minimum Salary</legend>
+                        <div class="filter-options">
+                            <label for="min-salary" class="sr-only">Minimum annual salary</label>
+                            <select id="min-salary" name="minSalary" class="filter-select">
+                                <option value="0">Any salary</option>
+                                <option value="30000">$30,000+</option>
+                                <option value="50000">$50,000+</option>
+                                <option value="70000">$70,000+</option>
+                                <option value="90000">$90,000+</option>
+                                <option value="110000">$110,000+</option>
+                                <option value="130000">$130,000+</option>
+                                <option value="150000">$150,000+</option>
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <div class="filter-actions">
+                        <button type="button" class="btn btn-secondary" id="reset-filters-btn">Reset Filters</button>
+                        <button type="button" class="btn btn-primary" id="apply-filters-btn">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sort and Results Count -->
+        <div class="results-header" id="results-header" hidden>
+            <div class="results-info">
+                <span id="results-count">0 jobs found</span>
+                <div class="results-categories" id="results-categories"></div>
+            </div>
+            <div class="results-sort">
+                <label for="sort-by" class="sr-only">Sort results by</label>
+                <select id="sort-by" class="filter-select">
+                    <option value="relevance">Sort by: Relevance</option>
+                    <option value="date">Sort by: Date</option>
+                    <option value="salary-high">Sort by: Salary (High)</option>
+                    <option value="salary-low">Sort by: Salary (Low)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loading-state" hidden>
+            <div class="spinner" aria-label="Loading results"></div>
+            <p class="loading-text" id="loading-text">Searching for jobs...</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-state" id="error-state" hidden role="alert">
+            <div class="error-icon" aria-hidden="true">!</div>
+            <h2 class="error-title" id="error-title">Something went wrong</h2>
+            <p class="error-message" id="error-message">Unable to fetch job listings. Please try again.</p>
+            <button class="btn btn-primary" id="retry-btn">Try Again</button>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="empty-state" hidden>
+            <div class="empty-icon" aria-hidden="true">&#128269;</div>
+            <h2>No jobs found</h2>
+            <p>Try adjusting your search keywords or filters to find more results.</p>
+        </div>
+
+        <!-- Welcome State -->
+        <div class="welcome-state" id="welcome-state">
+            <div class="welcome-icon" aria-hidden="true">&#127968;</div>
+            <h2>Welcome to New England Jobs</h2>
+            <p>Search for remote, hybrid, and on-site job opportunities across the six New England states.</p>
+            <div class="welcome-categories">
+                <span class="badge badge-remote">Remote</span>
+                <span class="badge badge-remote-us">Remote (US)</span>
+                <span class="badge badge-hybrid">Hybrid (NE)</span>
+                <span class="badge badge-onsite">On-site (NE)</span>
+                <span class="badge badge-remote-ne">Remote (NE Co.)</span>
+            </div>
+        </div>
+
+        <!-- Rate Limit Warning -->
+        <div class="rate-limit-warning" id="rate-limit-warning" hidden role="alert">
+            <p>Rate limit reached. Please wait a moment before searching again.</p>
+        </div>
+
+        <!-- Job Results Grid -->
+        <div class="jobs-grid" id="jobs-grid" role="list" aria-label="Job listings"></div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" hidden>
+            <button class="btn btn-secondary pagination-btn" id="prev-page-btn" disabled>Previous</button>
+            <span class="pagination-info" id="pagination-info">Page 1</span>
+            <button class="btn btn-secondary pagination-btn" id="next-page-btn">Next</button>
+        </div>
+    </main>
+
+    <!-- Job Detail Modal -->
+    <div class="modal-overlay" id="job-detail-modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-job-title">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close-btn" aria-label="Close job details">&times;</button>
+            <div class="modal-body" id="modal-body">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+
+    <!-- Footer -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-content">
+            <p>New England Jobs Aggregator &mdash; Powered by <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" rel="noopener noreferrer">JSearch API</a></p>
+            <p class="footer-note">Job data is sourced from multiple job boards. API key required for search functionality.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/saved-jobs.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
